@@ -1,49 +1,26 @@
-const cards = document.querySelectorAll('.card');
-
-let hasFlippedCard = false;
-let lockBoard = false;
-let firstCard, secondCard;
-
-function flipCard() {
-  if (lockBoard) return;
-  if (this === firstCard) return;
-
-  this.classList.add('flipped');
-
-  if (!hasFlippedCard) {
-    hasFlippedCard = true;
-    firstCard = this;
-    return;
-  }
-
-  secondCard = this;
-  checkForMatch();
+.memory-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-function checkForMatch() {
-  let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
-  isMatch ? disableCards() : unflipCards();
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  gap: 10px;
 }
 
-function disableCards() {
-  firstCard.classList.add('matched');
-  secondCard.classList.add('matched');
-  resetBoard();
+.card {
+  width: 100px;
+  height: 100px;
+  background-color: #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-function unflipCards() {
-  lockBoard = true;
-
-  setTimeout(() => {
-    firstCard.classList.remove('flipped');
-    secondCard.classList.remove('flipped');
-    resetBoard();
-  }, 1000);
+.card.flipped {
+  background-color: #fff;
 }
-
-function resetBoard() {
-  [hasFlippedCard, lockBoard] = [false, false];
-  [firstCard, secondCard] = [null, null];
-}
-
-cards.forEach(card => card.addEventListener('click', flipCard));
