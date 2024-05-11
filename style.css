@@ -1,26 +1,62 @@
-.memory-game {
-  display: flex;
-  flex-wrap: wrap;
-  width: 300px;
+const symbols = ['😀', '😁', '😂', '🤣', '😃', '😄', '😅', '😆'];
+let cards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+
+function startGame() {
+  const cardSymbols = symbols.concat(symbols);
+  cards = shuffle(cardSymbols);
+  matchedPairs = 0;
+  flippedCards = [];
+
+  const cardsContainer = document.getElementById('cards');
+  cardsContainer.innerHTML = '';
+
+  cards.forEach(symbol => {
+    const cardElement = document.createElement('div');
+    cardElement.classList.add('card');
+    cardElement.innerHTML = <span class="symbol">${symbol}</span>;
+    cardElement.addEventListener('click', () => flipCard(cardElement));
+    cardsContainer.appendChild(cardElement);
+  });
 }
 
-.card {
-  width: 50px;
-  height: 50px;
-  margin: 5px;
-  background-color: #e0e0e0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  cursor: pointer;
+function flipCard(cardElement) {
+  if (flippedCards.length < 2 && !flippedCards.includes(cardElement)) {
+    cardElement.classList.add('flipped');
+    flippedCards.push(cardElement);
+
+    if (flippedCards.length === 2) {
+      setTimeout(checkMatch, 1000);
+    }
+  }
 }
 
-.card.matched {
-  background-color: green;
-  pointer-events: none;
+function checkMatch() {
+  const [card1, card2] = flippedCards;
+  const symbol1 = card1.querySelector('.symbol').innerHTML;
+  const symbol2 = card2.querySelector('.symbol').innerHTML;
+
+  if (symbol1 === symbol2) {
+    card1.removeEventListener('click', () => flipCard(card1));
+    card2.removeEventListener('click', () => flipCard(card2));
+    matchedPairs++;
+
+    if (matchedPairs === symbols.length) {
+      alert('Congratulations! You won!');
+    }
+  } else {
+    card1.classList.remove('flipped');
+    card2.classList.remove('flipped');
+  }
+
+  flippedCards = [];
 }
 
-.card.flipped {
-  background-color: #fff;
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
